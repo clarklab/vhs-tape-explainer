@@ -1,0 +1,245 @@
+<title>Inside the VHS Tape</title>
+<meta name="description" content="An animated three-slide explainer: how a VHS tape, the VCR's spinning head drum and tracking actually work.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=VT323&display=swap">
+<link rel="stylesheet" href="styles.css">
+
+<div class="deck" id="deck">
+  <header class="bar">
+    <a class="brand" href="#tape" data-go="0" aria-label="Inside the VHS Tape, back to start">
+      <span class="brand-mark">VHS</span>
+      <span class="brand-sub">How the tape actually works</span>
+    </a>
+    <nav class="tabs" aria-label="Slides">
+      <button class="tab" type="button" data-go="0"><span class="tab-n">1</span><span class="tab-l">The tape</span></button>
+      <button class="tab" type="button" data-go="1"><span class="tab-n">2</span><span class="tab-l">The drum</span></button>
+      <button class="tab" type="button" data-go="2"><span class="tab-n">3</span><span class="tab-l">Tracking</span></button>
+    </nav>
+  </header>
+
+  <main class="slides" id="slides">
+    <!-- ───────────── Slide 1 · The tape ───────────── -->
+    <section class="slide" id="tape" data-scene="tape" aria-labelledby="tape-h">
+      <div class="stage">
+        <canvas aria-hidden="true"></canvas>
+        <p class="stage-note" aria-hidden="true"></p>
+      </div>
+      <div class="copy">
+        <p class="eyebrow">Slide 1 of 3 · The tape</p>
+        <h2 id="tape-h">It isn’t film. There isn’t a single picture on it.</h2>
+        <ol class="beats">
+          <li class="beat" data-note="Film frames on top · VHS tape below, true colour">
+            <h3><button type="button">Film is pictures. Tape is not.</button></h3>
+            <div class="beat-body"><div>
+              <p>A reel of film is a stack of tiny photographs: hold it up to a lamp and you can see the movie. Hold VHS tape up to the same lamp and all you see is flat, rusty brown. The picture is stored as invisible magnetism.</p>
+              <dl class="stats">
+                <div><dt>pictures on a VHS tape</dt><dd>0</dd></div>
+                <div><dt>JVC launches VHS in Japan</dt><dd>1976</dd></div>
+              </dl>
+            </div></div>
+          </li>
+          <li class="beat" data-note="Cutaway, top shell removed · reels turning">
+            <h3><button type="button">Inside the shell</button></h3>
+            <div class="beat-body"><div>
+              <p>The cassette is a sealed little machine: two reels, spring brakes that lock them, a dust flap, and a clear plastic leader at each end. A lamp inside the VCR rises into the cassette. When the clear leader comes by, the light shines straight through it and the machine knows it has reached the end.</p>
+              <dl class="stats">
+                <div><dt>of tape in a T‑120 (2 h in SP)</dt><dd>246 m</dd></div>
+                <div><dt>tape width: half an inch</dt><dd>12.65 mm</dd></div>
+                <div><dt>cassette width (103 deep, 25 thick)</dt><dd>187 mm</dd></div>
+              </dl>
+            </div></div>
+          </li>
+          <li class="beat" data-note="Cross-section, magnified ≈10,000× · base layer shortened">
+            <h3><button type="button">Rust on plastic</button></h3>
+            <div class="beat-body"><div>
+              <p>The tape is a polyester ribbon, a fifth as thick as printer paper, with one side coated in billions of iron-oxide needles held in glue. Each needle is a tiny bar magnet. On blank tape they point every which way, and played back that sounds like hiss and looks like snow.</p>
+              <dl class="stats">
+                <div><dt>total tape thickness (paper ≈ 100 µm)</dt><dd>≈20 µm</dd></div>
+                <div><dt>length of one oxide needle</dt><dd>≈0.3 µm</dd></div>
+              </dl>
+            </div></div>
+          </li>
+          <li class="beat" data-note="Recording · tape slowed millions of times">
+            <h3><button type="button">Writing with an electromagnet</button></h3>
+            <div class="beat-body"><div>
+              <p>The video head is a C-shaped ferrite electromagnet with a gap narrower than a wavelength of light. Current in its coil pushes a magnetic field out through the gap, and every needle that passes under it gets flipped to match. The video signal ends up as a row of north–south stripes.</p>
+              <dl class="stats">
+                <div><dt>head gap</dt><dd>≈0.3 µm</dd></div>
+                <div><dt>shortest stripe (a red blood cell is ≈7 µm)</dt><dd>≈1.3 µm</dd></div>
+              </dl>
+            </div></div>
+          </li>
+          <li class="beat" data-note="Playback · same head, now listening">
+            <h3><button type="button">Reading it back</button></h3>
+            <div class="beat-body"><div>
+              <p>Playback runs the same head over the stripes. A coil only makes a voltage when the magnetism through it <em>changes</em> (Faraday’s law), so the head picks up the boundaries between stripes. Brightness is coded in how close together they are: frequency modulation, just like FM radio.</p>
+              <dl class="stats">
+                <div><dt>FM band for black → white (NTSC)</dt><dd>3.4–4.4 MHz</dd></div>
+              </dl>
+            </div></div>
+          </li>
+          <li class="beat" data-note="Developer fluid reveals the recording · angle exaggerated 3×">
+            <h3><button type="button">Make it visible</button></h3>
+            <div class="beat-body"><div>
+              <p>Brush recorded tape with magnetic developer fluid and the hidden recording shows up. It still isn’t pictures. You get thousands of thin diagonal stripes, plus a band along each edge. Why diagonal? Slide 2 explains.</p>
+              <dl class="stats">
+                <div><dt>diagonal stripes on a 2‑hour movie (NTSC SP)</dt><dd>431,568</dd></div>
+              </dl>
+            </div></div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ───────────── Slide 2 · The drum ───────────── -->
+    <section class="slide" id="drum" data-scene="drum" aria-labelledby="drum-h">
+      <div class="stage">
+        <canvas aria-hidden="true"></canvas>
+        <p class="stage-note" aria-hidden="true"></p>
+      </div>
+      <div class="copy">
+        <p class="eyebrow">Slide 2 of 3 · The VCR</p>
+        <h2 id="drum-h">The tape barely moves. The heads do the running.</h2>
+        <ol class="beats">
+          <li class="beat" data-note="Log scale · speeds from the VHS spec">
+            <h3><button type="button">Video is too fast for tape</button></h3>
+            <div class="beat-body"><div>
+              <p>A TV picture holds over a hundred times more signal than audio. To record it, the head has to cross the tape at almost 6 metres per second. Pull tape past a fixed head that fast and a 2‑hour cassette is over in 42 seconds.</p>
+              <dl class="stats">
+                <div><dt>head-to-tape speed needed</dt><dd>5.8 m/s</dd></div>
+                <div><dt>T‑120 run time at that speed</dt><dd>0:42</dd></div>
+                <div><dt>real VHS tape speed (SP), slower than an audio cassette</dt><dd>33 mm/s</dd></div>
+              </dl>
+            </div></div>
+          </li>
+          <li class="beat" data-note="Top view · drum shown ≈60× slower">
+            <h3><button type="button">So spin the heads</button></h3>
+            <div class="beat-body"><div>
+              <p>Press Play and guide posts pull the tape out of the cassette and wrap it around a slanted metal drum. That’s the whirr-and-clunk. The top half of the drum spins with two heads on opposite sides. The tape wraps just over halfway around, so one head is always touching it.</p>
+              <dl class="stats">
+                <div><dt>drum speed (1,500 in PAL)</dt><dd>1,800 rpm</dd></div>
+                <div><dt>speed the heads hit the tape</dt><dd>≈21 km/h</dd></div>
+                <div><dt>drum diameter</dt><dd>62 mm</dd></div>
+              </dl>
+            </div></div>
+          </li>
+          <li class="beat" data-note="Side view · tilt drawn 1.5× steeper for clarity">
+            <h3><button type="button">The 6° tilt</button></h3>
+            <div class="beat-body"><div>
+              <p>The drum is tipped about 6° relative to the tape, and a machined ledge on the lower drum guides the tape around it in a spiral. Each pass of a head cuts one long diagonal line from the bottom edge of the tape to the top. This is <strong>helical scan</strong>.</p>
+              <dl class="stats">
+                <div><dt>drum tilt</dt><dd>≈6°</dd></div>
+                <div><dt>length of each track, on tape 12.65 mm wide</dt><dd>≈97 mm</dd></div>
+              </dl>
+            </div></div>
+          </li>
+          <li class="beat" data-note="Tape unrolled · slowed ≈50× · angle exaggerated 3×">
+            <h3><button type="button">One stripe, one field</button></h3>
+            <div class="beat-body"><div>
+              <p>Each pass records one field: every other line of one TV picture, in 1/60 of a second. Head A lays a stripe, then head B lays the next one right beside it. Along the edges, fixed heads write a plain audio track on top and a control track on the bottom.</p>
+              <dl class="stats">
+                <div><dt>stripes per second (NTSC)</dt><dd>59.94</dd></div>
+                <div><dt>ground the heads cover in 2 hours, on 246 m of tape</dt><dd>≈42 km</dd></div>
+              </dl>
+            </div></div>
+          </li>
+          <li class="beat" data-note="Close-up of four tracks · azimuth angles exaggerated 2×">
+            <h3><button type="button">No gaps, tilted heads</button></h3>
+            <div class="beat-body"><div>
+              <p>The stripes touch, with no blank space between them. So how does head A avoid picking up head B’s stripe next door? The gaps in the two heads are tilted +6° and −6°. A head reading a stripe written at the other angle gets almost nothing. This is <strong>azimuth recording</strong>.</p>
+              <dl class="stats">
+                <div><dt>track width in SP (a hair is ≈70 µm)</dt><dd>58 µm</dd></div>
+                <div><dt>track width in EP, the 6‑hour mode</dt><dd>19 µm</dd></div>
+              </dl>
+            </div></div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ───────────── Slide 3 · Tracking ───────────── -->
+    <section class="slide" id="tracking" data-scene="tracking" aria-labelledby="tracking-h">
+      <div class="stage">
+        <canvas aria-hidden="true"></canvas>
+        <p class="stage-note" aria-hidden="true"></p>
+        <div class="knob">
+          <label for="tracking-knob">Tracking</label>
+          <input type="range" id="tracking-knob" min="-100" max="100" value="0" step="1">
+        </div>
+      </div>
+      <div class="copy">
+        <p class="eyebrow">Slide 3 of 3 · Tracking</p>
+        <h2 id="tracking-h">Hitting a 58-micron stripe at 21 km/h</h2>
+        <ol class="beats">
+          <li class="beat" data-note="Your own recording · servo locked">
+            <h3><button type="button">Electronic sprocket holes</button></h3>
+            <div class="beat-body"><div>
+              <p>Film has sprocket holes. VHS has a control track: one magnetic pulse per frame along the bottom edge. During playback a servo compares those pulses with the drum’s position and adjusts the capstan until each head arrives just as its stripe does.</p>
+              <dl class="stats">
+                <div><dt>control pulses per second (25 in PAL)</dt><dd>30</dd></div>
+              </dl>
+            </div></div>
+          </li>
+          <li class="beat" data-note="A tape recorded on another deck · drag TRACKING">
+            <h3><button type="button">When tracking drifts</button></h3>
+            <div class="beat-body"><div>
+              <p>Play a tape recorded on another VCR and its stripes sit a few microns away from where your deck expects them. The head wanders over the boundary into the neighbouring stripe, which was written at the wrong angle, so the signal drops out: that’s the bar of snow. The tracking control shifts the timing until the bar rolls away. Drag the slider under the TV to try it.</p>
+              <dl class="stats">
+                <div><dt>half a track: the worst possible error</dt><dd>±29 µm</dd></div>
+              </dl>
+            </div></div>
+          </li>
+          <li class="beat" data-note="Bottom of the picture magnified">
+            <h3><button type="button">The glitch at the bottom</button></h3>
+            <div class="beat-body"><div>
+              <p>The two heads take turns, so playback switches from head A to head B 60 times a second. The handoff happens just above the bottom edge of the picture, which CRT TVs hid under the bezel. Digital captures show the whole frame, which is why VHS rips have a ragged, wobbling strip along the bottom.</p>
+              <dl class="stats">
+                <div><dt>before vertical sync, where the switch lands</dt><dd>≈6 lines</dd></div>
+                <div><dt>decks added heads for a clean pause and slow motion</dt><dd>4‑head</dd></div>
+              </dl>
+            </div></div>
+          </li>
+          <li class="beat" data-note="Recorded spectrum, NTSC VHS">
+            <h3><button type="button">Colour gets the cheap seats</button></h3>
+            <div class="beat-body"><div>
+              <p>There isn’t room for broadcast-quality colour, so VHS records brightness as FM up high and squeezes colour into a narrow band underneath it, at 629 kHz. Colour ends up with far less detail than brightness, so reds bleed sideways and edges go soft.</p>
+              <dl class="stats">
+                <div><dt>horizontal resolution (DVD ≈ 500)</dt><dd>≈240 lines</dd></div>
+                <div><dt>“colour-under” frequency</dt><dd>629 kHz</dd></div>
+              </dl>
+            </div></div>
+          </li>
+          <li class="beat" data-note="Cross-section of the magnetic coating">
+            <h3><button type="button">Hi-Fi sound hides under the picture</button></h3>
+            <div class="beat-body"><div>
+              <p>VHS Hi-Fi (1984) added two more heads to the drum. They write stereo sound as FM deep into the coating, and the video heads then write over the surface. Lower frequencies reach deeper, so both survive in the same strip of tape, one layer on top of the other. Be kind, rewind.</p>
+              <dl class="stats">
+                <div><dt>Hz: Hi-Fi frequency response</dt><dd>20–20k</dd></div>
+                <div><dt>Hi-Fi head azimuth</dt><dd>±30°</dd></div>
+                <div><dt>last VCR made (Funai, July)</dt><dd>2016</dd></div>
+              </dl>
+            </div></div>
+          </li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <footer class="controls">
+    <div class="transport" role="group" aria-label="Playback">
+      <button type="button" class="tbtn" id="prev" aria-label="Previous step"><span aria-hidden="true">◀◀</span><span class="tbtn-l">REW</span></button>
+      <button type="button" class="tbtn tbtn-play" id="auto" aria-pressed="false" aria-label="Auto-advance"><span class="tbtn-i" aria-hidden="true">▶</span><span class="tbtn-l">PLAY</span></button>
+      <button type="button" class="tbtn" id="next" aria-label="Next step"><span class="tbtn-l">FF</span><span aria-hidden="true">▶▶</span></button>
+    </div>
+    <div class="progress" id="progress" aria-hidden="true"></div>
+    <p class="counter" id="counter" aria-live="polite"></p>
+  </footer>
+</div>
+
+<script src="js/lib.js"></script>
+<script src="js/scene-tape.js"></script>
+<script src="js/scene-drum.js"></script>
+<script src="js/tv.js"></script>
+<script src="js/scene-tracking.js"></script>
+<script src="js/deck.js"></script>

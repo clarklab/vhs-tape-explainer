@@ -1,0 +1,354 @@
+/* Inside the VHS Tape — a deliberately single-theme (dark) presentation stage.
+   Palette is taken from the object itself: cassette-shell black, ferric-oxide
+   brown, drum chrome, and one colour per video head (A amber, B cyan). */
+:root {
+  color-scheme: dark;
+  --ground: #121013;
+  --stage: #0b0a0c;
+  --panel: #1a171b;
+  --line: #2e2a31;
+  --ink: #efe8dd;
+  --mute: #a69d93;
+  --faint: #6c646c;
+  --oxide: #6e4226;
+  --oxide-hi: #a3683c;
+  --head-a: #ffb13b;
+  --head-b: #46c9e8;
+  --display: "Archivo", "Arial Black", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --osd: "VT323", "IBM Plex Mono", ui-monospace, monospace;
+  --gutter: clamp(16px, 2.4vw, 40px);
+}
+
+html, body { height: 100%; }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.55;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--head-a); outline-offset: 3px; border-radius: 4px; }
+
+.deck {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding-inline: var(--gutter);
+}
+
+/* ── Top bar ─────────────────────────────────────────── */
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 14px 10px;
+}
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  color: inherit;
+  text-decoration: none;
+  min-width: 0;
+}
+.brand-mark {
+  font-family: var(--display);
+  font-stretch: 125%;
+  font-weight: 900;
+  font-style: italic;
+  font-size: 26px;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  padding-bottom: 4px;
+  background: linear-gradient(var(--oxide-hi), var(--oxide-hi)) left bottom / 100% 3px no-repeat;
+}
+.brand-sub {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tabs { display: flex; gap: 4px; }
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: none;
+  color: var(--mute);
+  cursor: pointer;
+  font-size: 14px;
+  transition: color .2s, border-color .2s, background .2s;
+}
+.tab:hover { color: var(--ink); }
+.tab-n {
+  font-family: var(--mono);
+  font-size: 12px;
+  width: 20px; height: 20px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+}
+.tab[aria-current="true"] { color: var(--ink); border-color: var(--line); background: var(--panel); }
+.tab[aria-current="true"] .tab-n { background: var(--head-a); border-color: var(--head-a); color: #1a1208; }
+
+/* ── Slides ──────────────────────────────────────────── */
+.slides { position: relative; min-height: 0; overflow: hidden; overflow: clip; }
+.slide {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(300px, 1fr);
+  gap: clamp(20px, 2.6vw, 44px);
+  padding-block: 6px 12px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(36px);
+  transition: opacity .5s ease, transform .6s cubic-bezier(.2,.7,.2,1), visibility 0s linear .6s;
+}
+.slide.is-current {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: 0s;
+}
+.slide.is-before { transform: translateX(-36px); }
+
+.stage {
+  position: relative;
+  min-height: 0;
+  background: var(--stage);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.stage-note {
+  position: absolute;
+  left: 14px; bottom: 10px;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint);
+  pointer-events: none;
+}
+
+/* Tracking knob, shown from beat 2 of slide 3 on */
+.knob {
+  position: absolute;
+  right: 14px; bottom: 10px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px 6px 14px;
+  border-radius: 999px;
+  background: rgba(11, 10, 12, .82);
+  border: 1px solid var(--line);
+}
+#tracking:not([data-step="0"]) .knob { display: flex; }
+.knob label {
+  font-family: var(--osd);
+  font-size: 20px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.knob input { width: min(220px, 34vw); accent-color: var(--head-a); }
+
+/* ── Copy column ─────────────────────────────────────── */
+.copy {
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-block: 8px 24px;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.eyebrow {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--head-a);
+}
+.copy h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-stretch: 118%;
+  font-weight: 800;
+  font-size: clamp(26px, 2.4vw, 40px);
+  line-height: 1.04;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+.beats { list-style: none; margin: 0; padding: 0; counter-reset: beat; display: flex; flex-direction: column; }
+.beat { counter-increment: beat; border-top: 1px solid var(--line); }
+.beat:last-child { border-bottom: 1px solid var(--line); }
+.beat h3 { margin: 0; font-size: inherit; }
+.beat h3 button {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 11px 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--body);
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--faint);
+  transition: color .25s;
+}
+.beat h3 button::before {
+  content: counter(beat, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--faint);
+  transition: color .25s;
+}
+.beat.is-past h3 button { color: var(--mute); }
+.beat h3 button:hover { color: var(--ink); }
+.beat.is-active h3 button { color: var(--ink); font-weight: 600; font-size: 17px; }
+.beat.is-active h3 button::before { color: var(--head-a); }
+
+.beat-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .45s cubic-bezier(.2,.7,.2,1);
+}
+.beat-body > div { overflow: hidden; min-height: 0; }
+.beat.is-active .beat-body { grid-template-rows: 1fr; }
+.beat-body p { margin: 0 0 14px; max-width: 62ch; color: #d9d1c5; font-size: 15.5px; }
+.beat-body p strong { color: var(--ink); font-weight: 600; }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px 18px;
+  margin: 0 0 16px;
+}
+.stats > div { display: flex; flex-direction: column-reverse; gap: 2px; }
+.stats dd {
+  margin: 0;
+  font-family: var(--display);
+  font-stretch: 125%;
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.stats dt { font-size: 12.5px; line-height: 1.35; color: var(--mute); }
+.beat.is-active .stats > div { animation: rise .6s cubic-bezier(.2,.7,.2,1) both; }
+.beat.is-active .stats > div:nth-child(2) { animation-delay: .12s; }
+.beat.is-active .stats > div:nth-child(3) { animation-delay: .24s; }
+@keyframes rise { from { opacity: .15; transform: translateY(8px); } }
+
+/* ── Transport / progress ────────────────────────────── */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-block: 10px calc(12px + env(safe-area-inset-bottom, 0px));
+}
+.transport { display: flex; gap: 6px; }
+.tbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  cursor: pointer;
+  font-family: var(--osd);
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  transition: border-color .2s, background .2s;
+}
+.tbtn:hover { border-color: var(--faint); }
+.tbtn:disabled { opacity: .35; cursor: default; }
+.tbtn-play[aria-pressed="true"] { border-color: var(--head-a); color: var(--head-a); }
+
+.progress { flex: 1; display: flex; gap: 10px; min-width: 0; }
+.progress .grp { flex: var(--n) 1 0; display: flex; gap: 3px; }
+.progress .seg {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+  position: relative;
+  overflow: hidden;
+}
+.progress .seg.done { background: var(--oxide-hi); }
+.progress .seg.now { background: var(--line); }
+.progress .seg.now::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: var(--head-a);
+  transform-origin: left;
+  transform: scaleX(var(--p, 1));
+}
+.counter {
+  margin: 0;
+  font-family: var(--osd);
+  font-size: 20px;
+  letter-spacing: 0.06em;
+  color: var(--mute);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Narrow screens: stack the stage above the copy ─── */
+@media (max-width: 880px) {
+  .slide {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-content: start;
+    overflow-y: auto;
+    gap: 16px;
+  }
+  .stage { max-width: 100%; }
+  .stage canvas { position: relative; height: auto; aspect-ratio: 1000 / 720; }
+  .copy { overflow: visible; padding-bottom: 32px; }
+  .brand-sub { display: none; }
+  .tab { padding: 6px 9px; font-size: 13px; }
+  .counter { display: none; }
+  .knob { position: static; margin: 0 10px 10px; justify-content: center; }
+  .knob input { width: 100%; }
+  .stage-note { display: none; }
+}
+@media (max-width: 520px) {
+  .tab-l { display: none; }
+  .tbtn-l { display: none; }
+  .tbtn { padding: 8px 12px; }
+  .brand-mark { font-size: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide, .beat-body, .tab { transition: none; }
+  .beat.is-active .stats > div { animation: none; }
+}
