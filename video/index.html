@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inside the VHS Tape · Film</title>
+<meta name="description" content="The narrated 16:9 film version of the VHS explainer, playable in the browser and renderable to MP4.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Permanent+Marker&family=VT323&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --ground: #121013;
+    --panel: #1a171b;
+    --line: #2e2a31;
+    --ink: #efe8dd;
+    --mute: #a69d93;
+    --head-a: #ffb13b;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--ground); color: var(--ink); font-family: var(--mono); }
+  body { display: grid; place-items: center; padding: 16px; }
+  .player { width: min(100%, calc((100vh - 120px) * 16 / 9)); }
+  canvas { display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 6px; }
+  .bar { display: flex; align-items: center; gap: 14px; margin-top: 12px; font-size: 13px; color: var(--mute); }
+  .bar button {
+    font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line);
+    border-radius: 999px; padding: 7px 16px; cursor: pointer; letter-spacing: .08em;
+  }
+  .bar button[aria-pressed="true"] { border-color: var(--head-a); color: var(--head-a); }
+  .bar input[type=range] { flex: 1; accent-color: var(--head-a); min-width: 0; }
+  .bar output { font-variant-numeric: tabular-nums; min-width: 9ch; text-align: right; }
+  .note { margin-top: 10px; font-size: 12px; color: var(--mute); }
+  body.render { padding: 0; display: block; }
+  body.render canvas { width: 1920px; height: 1080px; border-radius: 0; }
+  body.render .bar, body.render .note { display: none; }
+  :focus-visible { outline: 2px solid var(--head-a); outline-offset: 3px; }
+</style>
+
+<div class="player">
+  <canvas id="film" width="1920" height="1080" aria-label="Inside the VHS Tape, narrated film"></canvas>
+  <div class="bar">
+    <button type="button" id="play" aria-pressed="false">PLAY ▶</button>
+    <input type="range" id="scrub" min="0" max="1" step="0.01" value="0" aria-label="Position">
+    <output id="time">0:00 / 0:00</output>
+    <button type="button" id="cc" aria-pressed="true">CC</button>
+  </div>
+  <p class="note" id="note"></p>
+</div>
+
+<script src="../js/lib.js"></script>
+<script src="js/script.js"></script>
+<script src="js/timeline.js"></script>
+<script src="build/narration.js"></script>
+<script src="js/crt.js"></script>
+<script src="js/film.js"></script>
+<script src="js/scenes/open.js"></script>
+<script src="js/scenes/tape.js"></script>
+<script src="js/scenes/drum.js"></script>
+<script src="js/scenes/tracking.js"></script>
+<script>
+(function () {
+  const V = window.VHS;
+  const F = V.film;
+  const tl = F.build();
+  const canvas = document.getElementById('film');
+  const ctx = canvas.getContext('2d');
+  const params = new URLSearchParams(location.search);
+  const SCALE = canvas.width / F.W;
+
+  const fontsReady = Promise.all([
+    '400 20px "IBM Plex Mono"', '500 20px "IBM Plex Mono"',
+    '400 20px "IBM Plex Sans"', '600 20px "IBM Plex Sans"', 'italic 400 20px "IBM Plex Sans"',
+    '800 20px Archivo', '900 20px Archivo', 'italic 900 20px Archivo',
+    '20px VT323', '20px "Permanent Marker"',
+  ].map((f) => document.fonts.load(f))).then(() => document.fonts.ready);
+
+  /* ── render mode: driven frame by frame by tools/render.mjs ── */
+  if (params.has('render')) {
+    document.body.classList.add('render');
+    window.__vhs = {
+      ready: fontsReady.then(() => ({ duration: F.duration, fps: tl.fps, estimated: tl.estimated })),
+      frame(t, n, type = 'image/jpeg', q = 0.95) {
+        F.frame(ctx, t, SCALE, n);
+        return canvas.toDataURL(type, q);
+      },
+    };
+    return;
+  }
+
+  /* ── preview player ── */
+  const caps = V.film.captions = window.VHS_TIMELINE.captions(tl);
+  const audio = new Audio('build/soundtrack.m4a');
+  let hasAudio = true;
+  audio.addEventListener('error', () => {
+    hasAudio = false;
+    document.getElementById('note').textContent = 'No soundtrack yet (run tools/mix.mjs); playing picture only.';
+  });
+  const play = document.getElementById('play');
+  const scrub = document.getElementById('scrub');
+  const time = document.getElementById('time');
+  const cc = document.getElementById('cc');
+  scrub.max = F.duration.toFixed(2);
+  let playing = false;
+  let clock = 0, clockAt = 0;
+  const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  const now = () => (playing ? (hasAudio ? audio.currentTime : clock + (performance.now() - clockAt) / 1000) : clock);
+  function seek(t) {
+    clock = Math.max(0, Math.min(F.duration, t));
+    clockAt = performance.now();
+    if (hasAudio) audio.currentTime = clock;
+  }
+  function setPlaying(on) {
+    if (on && now() >= F.duration - 0.05) seek(0);
+    playing = on;
+    play.setAttribute('aria-pressed', String(on));
+    play.textContent = on ? 'PAUSE ❚❚' : 'PLAY ▶';
+    clockAt = performance.now();
+    if (hasAudio) on ? audio.play().catch(() => {}) : audio.pause();
+    if (!on && hasAudio) clock = audio.currentTime;
+  }
+  play.addEventListener('click', () => setPlaying(!playing));
+  cc.addEventListener('click', () => cc.setAttribute('aria-pressed', String(cc.getAttribute('aria-pressed') !== 'true')));
+  scrub.addEventListener('input', () => seek(+scrub.value));
+  document.addEventListener('keydown', (e) => {
+    if (e.target === scrub) return;
+    if (e.key === ' ' || e.key === 'k') { e.preventDefault(); setPlaying(!playing); }
+    else if (e.key === 'ArrowRight') seek(now() + 5);
+    else if (e.key === 'ArrowLeft') seek(now() - 5);
+  });
+  if (params.has('t')) seek(+params.get('t'));
+
+  function caption(t) {
+    const c = caps.find((x) => t >= x.a && t <= x.b);
+    if (!c) return;
+    ctx.save();
+    ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
+    ctx.font = '500 26px "IBM Plex Sans", sans-serif';
+    const w = ctx.measureText(c.text).width + 32;
+    ctx.fillStyle = 'rgba(0,0,0,.72)';
+    ctx.fillRect(F.W / 2 - w / 2, F.H - 78, w, 42);
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.fillText(c.text, F.W / 2, F.H - 49);
+    ctx.restore();
+  }
+
+  let frameNo = 0;
+  function tick() {
+    let t = now();
+    if (playing && t >= F.duration) { setPlaying(false); seek(F.duration); t = F.duration; }
+    F.frame(ctx, Math.min(t, F.duration - 1e-3), SCALE, frameNo++);
+    if (cc.getAttribute('aria-pressed') === 'true') caption(t);
+    if (document.activeElement !== scrub) scrub.value = t.toFixed(2);
+    time.textContent = `${fmt(t)} / ${fmt(F.duration)}`;
+    requestAnimationFrame(tick);
+  }
+  fontsReady.then(() => requestAnimationFrame(tick));
+})();
+</script>
+</html>
