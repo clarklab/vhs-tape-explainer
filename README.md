@@ -42,3 +42,46 @@ a slide with `#tape`, `#drum` or `#tracking`.
 
 Figures are NTSC VHS unless noted (PAL values appear where they differ). A few
 diagrams exaggerate angles for legibility, and each one says so on screen.
+
+## The film
+
+`video/` turns the deck into a narrated, fully animated 16:9 film (about 4½
+minutes, 1080p30), in the style of a TV science explainer. It reuses the
+deck's canvas drawings, re-laid out for widescreen, and times every label,
+callout and camera move to the word the narrator is saying.
+
+- **Watch it:** render it (below) to `video/build/inside-the-vhs-tape.mp4`,
+  which has English subtitles as a soft track. To preview in the browser
+  with sound, serve the repo (`python3 -m http.server 8000`) and open
+  `http://localhost:8000/video/`. Space plays, arrow keys seek and CC
+  toggles captions.
+- **Voice, music and sound effects** come from ElevenLabs. The narrator is
+  the "A Top Narrator VO PRO" voice on `eleven_multilingual_v2`.
+
+### Rebuilding
+
+Node 22+, ffmpeg and Google Chrome are the only requirements; there is no
+`npm install`. The generated audio is cached, so only changed lines are
+re-voiced.
+
+```sh
+export ELEVENLABS_API_KEY=...          # or put ELEVENLABS_API_KEY=... in video/.env
+node video/tools/narrate.mjs           # voice + word timings → build/narration.js, captions.srt
+node video/tools/sounds.mjs            # sound effects + music bed
+node video/tools/mix.mjs               # soundtrack, ducked and normalised to −16 LUFS
+node video/tools/render.mjs            # frames in headless Chrome → MP4
+```
+
+`render.mjs --stills load:load+2,tilt@4` writes JPEG stills for checking a
+moment without rendering everything. A still is given as a shot and a cue
+word, a shot and local seconds, or absolute seconds.
+
+| File | What it does |
+| --- | --- |
+| `video/js/script.js` | Shot list, narration with `[[cue]]` markers, camera moves, on-screen facts, sound cues |
+| `video/js/timeline.js` | Turns the script plus narration timings into shot and cue times |
+| `video/js/film.js` | Compositor: camera, transitions, VHS glitch cuts, fact cards, grain |
+| `video/js/scenes/*.js` | The scenes: cold open and bookends, then the tape, the drum and tracking |
+| `video/js/crt.js` | The deck's software CRT, with graded colour smear and full-screen static |
+| `video/index.html` | Browser player, and the frame hook the renderer drives |
+| `video/tools/*.mjs` | Narration, sounds, mix and render (headless Chrome over the DevTools protocol) |
